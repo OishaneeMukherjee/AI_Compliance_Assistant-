@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Extraction Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .results-container {
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+    .notice-info {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .tasks-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .tasks-table th, .tasks-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    .tasks-table th {
+      background-color: #5a41d7;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    .tasks-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .tasks-table tr:hover {
+      background-color: #e9e9e9;
+    }
+    .status-pending {
+      color: #d35400;
+      font-weight: bold;
+    }
+    .status-completed {
+      color: #27ae60;
+      font-weight: bold;
+    }
+    .action-btn {
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-right: 5px;
+    }
+    .btn-primary {
+      background-color: #5a41d7;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  {% include 'navigation.html' %}
+
+  <div class="results-container">
+    <div class="notice-info">
+      <h2>Extraction Results</h2>
+      <p><strong>Source Document:</strong> {{ notice_filename }}</p>
+      <p><strong>Document Type:</strong> {{ notice_type }}</p>
+    </div>
+
+    <h3>Extracted Compliance Tasks</h3>
+    {% if extracted_tasks %}
+      <div class="table-responsive">
+        <table class="tasks-table">
+          <thead>
+            <tr>
+              <th>Task Description</th>
+              <th>Document Type</th>
+              <th>Parties Involved</th>
+              <th>Deadline</th>
+              <th>Penalty</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in extracted_tasks %}
+            <tr>
+              <td>{{ task.description }}</td>
+              <td>{{ task.document_type if task.document_type else 'N/A' }}</td>
+              <td>{{ task.parties if task.parties else 'N/A' }}</td>
+              <td>{{ task.deadline if task.deadline else 'Not specified' }}</td>
+              <td>{{ task.penalty if task.penalty else 'N/A' }}</td>
+              <td class="status-{{ task.status.lower() }}">{{ task.status }}</td>
+              <td>
+                <a href="#" class="action-btn btn-primary">Create Alert</a>
+                <a href="#" class="action-btn">View Details</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>No compliance tasks were found in this document.</p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+      <a href="{{ url_for('extract_tasks') }}" class="btn-primary">Extract Another Document</a>
+    </div>
+  </div>
+</body>
+</html>

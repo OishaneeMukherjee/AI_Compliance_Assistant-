@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Display Records | LEGALOGIC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .display-container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 2rem;
+    }
+    .record-card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+      background-color: #fff;
+    }
+    .record-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .record-meta {
+      color: #555;
+      font-size: 0.9rem;
+    }
+    .view-button {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  {% include 'navigation.html' %}
+
+  <div class="display-container">
+    <h2>📋 Record Details</h2>
+
+    {% for record in records %}
+      <div class="record-card">
+        <div class="record-title">{{ record.file_name }}</div>
+        <div class="record-meta">
+          <p><strong>ID:</strong> {{ record.notice_id }}</p>
+          <p><strong>Date:</strong> {{ record.upload_date.strftime('%Y-%m-%d') if record.upload_date else 'N/A' }}</p>
+          <p><strong>MIME Type:</strong> {{ record.mime_type }}</p>
+        </div>
+        <div class="view-button">
+          <a href="{{ url_for('view_file', notice_id=record.notice_id) }}" target="_blank">🔍 View File</a>
+        </div>
+      </div>
+    {% else %}
+      <p>No records found.</p>
+    {% endfor %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Extract Tasks from Notice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .nav-gradient-btn {
+            background: linear-gradient(to right, #1e2a38, #5a41d7);
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-gradient-btn:hover {
+            opacity: 0.9;
+        }
+
+        .nav-gradient-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color:#000;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navigation.html' %}
+    <div class="container">
+        <h2>Extract Tasks from Uploaded Notices</h2>
+
+        <!-- Flash messages (success/error) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="flash-{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+       <form method="POST" action="{{ url_for('extract_tasks') }}" id="extractionForm">
+    <label for="notice_id">Select a Notice:</label>
+    <select name="notice_id" id="notice_id" required>
+        <option value="">-- Select Notice --</option>
+        {% for notice in notices %}
+            <option value="{{ notice.id }}">
+                {{ notice.filename }} - {{ notice.upload_date }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <input type="submit" value="Extract Tasks" class="nav-gradient-btn" id="extractBtn">
+</form>
+    </div>
+
+    <script>
+        document.getElementById('extractionForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('extractBtn');
+            btn.disabled = true;
+            btn.value = 'Extracting...';
+        });
+    </script>
+</body>
+</html>

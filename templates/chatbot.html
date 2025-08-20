@@ -1,0 +1,43 @@
+<!-- Chatbot Container -->
+<div class="chatbot-container">
+    <div class="chatbot-window">
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                <i class="fas fa-robot"></i> LEGALOGIC Assistant
+            </div>
+            <button class="chatbot-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chatbot-messages">
+            <div class="message bot-message">
+                Hello! I'm your LEGALOGIC compliance assistant. How can I help you today?
+                <div class="message-time">Just now</div>
+                
+                <div class="quick-replies">
+                    <div class="quick-reply" data-query="How to upload a document?">
+                        <i class="fas fa-upload"></i> Upload help
+                    </div>
+                    <div class="quick-reply" data-query="What is task extraction?">
+                        <i class="fas fa-tasks"></i> Task extraction
+                    </div>
+                    <div class="quick-reply" data-query="Explain compliance alerts">
+                        <i class="fas fa-bell"></i> Alerts info
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-input">
+            <input type="text" placeholder="Type your question here..." id="chatbotInput">
+            <button id="chatbotSend">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <button class="chatbot-button" id="chatbotToggle">
+        <i class="fas fa-comments"></i>
+    </button>
+</div>

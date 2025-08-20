@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Alerts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .alert-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #f9f9f9;
+    }
+    .alert-card h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .alert-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    .alert-actions {
+      margin-top: 10px;
+    }
+    .btn {
+      padding: 5px 10px;
+      margin-right: 5px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: #5a41d7;
+      color: white;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    .auto-alert {
+      border-left: 4px solid #5a41d7;
+    }
+    .manual-alert {
+      border-left: 4px solid #28a745;
+    }
+  </style>
+</head>
+<body>
+  {% include 'navigation.html' %}
+
+  <div class="container">
+    <h2>Task Alerts</h2>
+
+    <div class="alert-section">
+      <h3>Automatic Alerts</h3>
+      {% for alert in auto_alerts %}
+      <div class="alert-card auto-alert">
+        <div class="alert-meta">
+          <span>Task ID: {{ alert.task_id }}</span>
+          <span>Due: {{ alert.alert_date.strftime('%Y-%m-%d') }}</span>
+        </div>
+        <p>{{ alert.task_description }}</p>
+        <div class="alert-actions">
+          <a href="#" class="btn btn-primary">View Task</a>
+          <a href="#" class="btn btn-secondary">Snooze</a>
+        </div>
+      </div>
+      {% else %}
+      <p>No automatic alerts found.</p>
+      {% endfor %}
+    </div>
+
+    <div class="alert-section">
+      <h3>Manual Alerts</h3>
+      <form method="POST" action="/alert">
+        <label for="task_id">Task ID:</label>
+        <input type="text" name="task_id" placeholder="Enter the Task ID" required />
+
+        <label for="alert_date">Alert Date:</label>
+        <input type="date" name="alert_date" required />
+
+        <label for="method">Notification Method:</label>
+        <select name="method" required>
+          <option value="">-- Select Method --</option>
+          <option value="Email">Email</option>
+          <option value="In-App">In-App</option>
+          <option value="Both">Both</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Set Alert</button>
+      </form>
+
+      {% for alert in manual_alerts %}
+      <div class="alert-card manual-alert">
+        <div class="alert-meta">
+          <span>Task ID: {{ alert.task_id }}</span>
+          <span>Due: {{ alert.alert_date.strftime('%Y-%m-%d') }}</span>
+        </div>
+        <p>{{ alert.task_description }}</p>
+        <div class="alert-actions">
+          <a href="#" class="btn btn-primary">View Task</a>
+          <a href="#" class="btn btn-secondary">Edit</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

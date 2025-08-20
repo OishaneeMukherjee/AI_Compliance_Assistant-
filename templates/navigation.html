@@ -1,0 +1,58 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{{ url_for('dashboard') }}" class="logo">
+            <i class="fas fa-scale-balanced"></i>
+            <span>LEGALOGIC</span>
+        </a>
+        
+        <ul class="nav-menu">
+            <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                <i class="fas fa-home"></i> Dashboard
+            </a></li>
+            
+            <li><a href="{{ url_for('upload') }}" class="nav-link {% if request.path == url_for('upload') %}active{% endif %}">
+                <i class="fas fa-upload"></i> Upload
+            </a></li>
+            
+            <li><a href="{{ url_for('extract_tasks') }}" class="nav-link {% if request.path == url_for('extract_tasks') %}active{% endif %}">
+                <i class="fas fa-tasks"></i> Extract Tasks
+            </a></li>
+            
+            <li><a href="{{ url_for('simplify') }}" class="nav-link {% if request.path == url_for('simplify') %}active{% endif %}">
+                <i class="fas fa-language"></i> Simplify
+            </a></li>
+            
+            <li><a href="{{ url_for('view_alerts') }}" class="nav-link {% if request.path == url_for('view_alerts') %}active{% endif %}">
+                <i class="fas fa-bell"></i> Alerts
+            </a></li>
+            
+            <li><a href="{{ url_for('display') }}" class="nav-link {% if request.path == url_for('display') %}active{% endif %}">
+                <i class="fas fa-file-alt"></i> Documents
+            </a></li>
+        </ul>
+        
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-600" style="color:white">Welcome, {{ user.name if user else 'Guest' }}</span>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-user"></i> Profile
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle would go here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight current page in navigation
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+

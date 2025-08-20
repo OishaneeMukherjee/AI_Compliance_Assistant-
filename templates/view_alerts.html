@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Alerts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  {% include 'navigation.html' %}
+
+  <div class="container">
+    <h2>Your Alerts</h2>
+
+    {% if alerts %}
+      <table>
+        <tr>
+          <th>Task ID</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        {% for alert in alerts %}
+        <tr>
+          <td>{{ alert.task_id }}</td>
+          <td>
+            {% if alert.alert_date %}
+              {{ alert.alert_date.strftime('%Y-%m-%d') }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if alert.alert_date %}
+              {{ alert.alert_date.strftime('%H:%M') }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>{{ alert.method }}</td>
+          <td>{{ alert.status }}</td>
+          <td>
+            <!-- Use the Firestore document ID (not alert_id) -->
+            <a href="{{ url_for('update_alert', alert_id=alert.doc_id) }}" 
+               class="btn btn-primary">
+               Update
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No alerts found.</p>
+    {% endif %}
+  </div>
+</body>
+</html>

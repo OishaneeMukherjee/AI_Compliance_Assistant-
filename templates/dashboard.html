@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | LEGALOGIC</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #7209b7;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .quick-action {
+            transition: all 0.3s ease;
+        }
+        
+        .quick-action:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .task-priority {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .priority-high { background: #fee2e2; color: #dc2626; }
+        .priority-medium { background: #fef3c7; color: #d97706; }
+        .priority-low { background: #dcfce7; color: #16a34a; }
+        
+        .notification-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            border-radius: 50%;
+            color: white;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    {% include 'navigation.html' %}
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                <p class="text-gray-600 mt-2" style="color:white">Welcome back, {{ user.name }}! Here's your compliance overview.</p>
+            </div>
+            <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                <div class="relative">
+                    <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <i class="fas fa-bell text-gray-600"></i>
+                        {% if stats.alerts_count > 0 %}
+                        <span class="notification-dot">{{ stats.alerts_count }}</span>
+                        {% endif %}
+                    </button>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+                    <span class="text-sm text-gray-600">User ID: {{ user_id }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <!-- Total Notices -->
+            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Notices</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ stats.notices_count }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-file-alt text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-green-600">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                </div>
+            </div>
+
+            <!-- Total Tasks -->
+            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Active Tasks</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ stats.tasks_count }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-tasks text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-green-600">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                </div>
+            </div>
+
+            <!-- Pending Alerts -->
+            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Pending Alerts</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ stats.alerts_count }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                        <i class="fas fa-bell text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    {% if stats.alerts_count > 0 %}
+                    <span class="text-sm text-red-600">
+                        <i class="fas fa-exclamation-circle"></i> Needs attention
+                    </span>
+                    {% else %}
+                    <span class="text-sm text-green-600">
+                        <i class="fas fa-check-circle"></i> All clear
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Simplifications -->
+            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Simplifications</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ stats.simplifications_count }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-language text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-green-600">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                </div>
+            </div>
+
+            <!-- Compliance Score -->
+            <div class="stat-card bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Compliance Score</p>
+                        <p class="text-2xl font-bold text-gray-800">87%</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-indigo-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <span class="text-sm text-green-600">
+                        <i class="fas fa-arrow-up"></i> Good standing
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Left Column - Charts -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Task Status Chart -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Task Status Distribution</h3>
+                    <canvas id="taskStatusChart" class="w-full h-64"></canvas>
+                </div>
+
+                <!-- Task Categories Chart -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Task Categories</h3>
+                    <canvas id="taskCategoryChart" class="w-full h-64"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Column - Quick Actions & Recent Activity -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="{{ url_for('upload') }}" class="quick-action flex items-center p-3 rounded-lg bg-blue-50 text-blue-700 hover:text-white">
+                            <i class="fas fa-upload w-8"></i>
+                            <span>Upload Notice</span>
+                        </a>
+                        <a href="{{ url_for('add_task') }}" class="quick-action flex items-center p-3 rounded-lg bg-green-50 text-green-700 hover:text-white">
+                            <i class="fas fa-plus-circle w-8"></i>
+                            <span>Add Task</span>
+                        </a>
+                        <a href="{{ url_for('simplify') }}" class="quick-action flex items-center p-3 rounded-lg bg-purple-50 text-purple-700 hover:text-white">
+                            <i class="fas fa-language w-8"></i>
+                            <span>Simplify Text</span>
+                        </a>
+                        <a href="{{ url_for('extract_tasks') }}" class="quick-action flex items-center p-3 rounded-lg bg-orange-50 text-orange-700 hover:text-white">
+                            <i class="fas fa-tasks w-8"></i>
+                            <span>Extract Tasks</span>
+                        </a>
+                        <a href="{{ url_for('view_alerts') }}" class="quick-action flex items-center p-3 rounded-lg bg-red-50 text-red-700 hover:text-white">
+                            <i class="fas fa-bell w-8"></i>
+                            <span>View Alerts</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Simplifications -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Simplifications</h3>
+                    <div class="space-y-3">
+                        {% for simplification in recent_simplifications %}
+                        <div class="flex items-start space-x-3 p-3 rounded-lg bg-gray-50">
+                            <i class="fas fa-file-alt text-gray-400 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-700">{{ simplification.preview }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ simplification.created_at_formatted if simplification.created_at_formatted else 'N/A' }}</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="text-gray-500 text-sm">No recent simplifications</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tasks & Notices -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Tasks -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Recent Tasks</h3>
+                    <a href="{{ url_for('task_results') }}" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
+                </div>
+                <div class="space-y-3">
+                    {% for task in recent_tasks %}
+                    <div class="flex items-center justify-between p-3 rounded-lg {% if task.is_overdue %}bg-red-50{% else %}bg-gray-50{% endif %}">
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800">{{ task.description[:50] }}{% if task.description|length > 50 %}...{% endif %}</p>
+                            <div class="flex items-center space-x-4 mt-1">
+                                <span class="text-xs text-gray-500">{{ task.task_type }}</span>
+                                <span class="text-xs text-gray-500">Due: {{ task.due_date_formatted if task.due_date_formatted else 'N/A' }}</span>
+                                <span class="task-priority priority-{{ task.priority|default('medium')|lower }}">{{ task.priority|default('Medium') }}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded-full {% if task.status == 'completed' %}bg-green-100 text-green-800{% elif task.is_overdue %}bg-red-100 text-red-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ task.status|title if task.status else 'Pending' }}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm">No tasks found</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Notices -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Recent Notices</h3>
+                    <a href="{{ url_for('display') }}" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
+                </div>
+                <div class="space-y-3">
+                    {% for notice in recent_notices %}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800">{{ notice.filename }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Uploaded: {{ notice.upload_date_formatted if notice.upload_date_formatted else 'N/A' }}</p>
+                        </div>
+                        <a href="{{ url_for('view_file', notice_id=notice.notice_id) if notice.notice_id else '#' }}" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm">No notices found</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Alerts -->
+        {% if upcoming_alerts %}
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mt-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Upcoming Alerts</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Task</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Due Date</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Method</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alert in upcoming_alerts %}
+                        <tr class="border-t">
+                            <td class="px-4 py-3 text-sm text-gray-800">{{ alert.task_id }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">{{ alert.alert_date_formatted if alert.alert_date_formatted else 'N/A' }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">{{ alert.method }}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 text-xs rounded-full {% if alert.status == 'active' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ alert.status|title if alert.status else 'Active' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Task Status Chart
+        const taskStatusCtx = document.getElementById('taskStatusChart').getContext('2d');
+        const taskStatusChart = new Chart(taskStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys({{ task_statuses | tojson }}),
+                datasets: [{
+                    data: Object.values({{ task_statuses | tojson }}),
+                    backgroundColor: [
+                        '#4361ee', '#7209b7', '#f72585', '#4cc9f0', '#3a0ca3'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Task Category Chart
+        const taskCategoryCtx = document.getElementById('taskCategoryChart').getContext('2d');
+        const taskCategoryChart = new Chart(taskCategoryCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys({{ task_categories | tojson }}),
+                datasets: [{
+                    label: 'Tasks',
+                    data: Object.values({{ task_categories | tojson }}),
+                    backgroundColor: '#4361ee',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Quick actions hover effect
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('mouseenter', function() {
+                this.classList.add('gradient-bg', 'text-white');
+            });
+            action.addEventListener('mouseleave', function() {
+                this.classList.remove('gradient-bg', 'text-white');
+            });
+        });
+
+        // Auto-refresh dashboard every 5 minutes
+        setInterval(() => {
+            window.location.reload();
+        }, 300000);
+    </script>
+    <!-- Chatbot Import -->
+<div id="chatbot-placeholder"></div>
+
+<script>
+// Load chatbot HTML
+fetch('partials/chatbot.html')
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById('chatbot-placeholder').innerHTML = data;
+    
+    // Load chatbot JavaScript
+    const script = document.createElement('script');
+    script.src = 'js/chatbot.js';
+    document.body.appendChild(script);
+  });
+</script>
+</body>
+</html>

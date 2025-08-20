@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simplification History - LEGALOGIC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<body>
+    {% include 'navigation.html' %}
+    
+    <div class="container">
+        <h1>Simplification History</h1>
+        
+        {% if not simplifications %}
+            <p>No simplification history found.</p>
+        {% else %}
+            <div class="history-list">
+                {% for item in simplifications %}
+                <div class="history-item">
+                    <div class="history-header">
+                        <strong>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</strong>
+                        <span>AI: {{ 'Yes' if item.use_ai else 'No' }}</span>
+                        <span>Time: {{ item.processing_time }}s</span>
+                    </div>
+                    <div class="history-content">
+                        <div><strong>Original:</strong> {{ item.original_preview }}</div>
+                        <div><strong>Simplified:</strong> {{ item.simplified_preview }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

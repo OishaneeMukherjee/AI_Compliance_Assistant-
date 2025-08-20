@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Alert</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    {% include 'navigation.html' %}
+    <div class="container">
+        <h1>Update Alert</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ 'success' if 'success' in message else 'error' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="hidden" name="alert_id" value="{{ alert_id }}">
+
+            <div class="form-group">
+                <label for="task_id">Task ID:</label>
+                <input type="text" id="task_id" value="{{ alert.task_id }}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="alert_date">Alert Date & Time:</label>
+                <input type="datetime-local" name="alert_date" id="alert_date" 
+                       value="{% if alert.alert_date %}{{ alert.alert_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="method">Notification Method:</label>
+                <select name="method" id="method" required>
+                    <option value="Email" {% if alert.method == 'Email' %}selected{% endif %}>Email</option>
+                    <option value="Notification" {% if alert.method == 'Notification' %}selected{% endif %}>In-App Notification</option>
+                    <option value="Both" {% if alert.method == 'Both' %}selected{% endif %}>Both</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select name="status" id="status" required>
+                    <option value="active" {% if alert.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if alert.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="is_sent">Already Sent:</label>
+                <input type="checkbox" name="is_sent" id="is_sent" value="true" 
+                       {% if alert.is_sent %}checked{% endif %}>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Alert</button>
+            <a href="{{ url_for('view_alerts') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

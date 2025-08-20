@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register - Legalogic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color:#000;
+        }
+  </style>
+</head>
+<body>
+  
+
+  <div class="container">
+    <h2>Register</h2>
+    <form method="POST">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <!-- Optional: Confirm password field for better UX -->
+      <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+
+      <input type="text" name="role" placeholder="Role" required>
+      <input type="text" name="company" placeholder="Company" required>
+      <input type="text" name="department" placeholder="Department" required>
+
+      <select name="alert_method" required>
+        <option value="Email" selected>Email</option>
+        <option value="In-App">In-App</option>
+        <option value="Both">Both</option>
+      </select>
+
+      <!-- Corrected name to match backend: alert_days_before -->
+      <input type="number" name="alert_days_before" placeholder="Alert Frequency (days)" required>
+
+      <input type="email" name="notification_email" placeholder="Notification Email" required>
+
+      <center><button type="submit">Register</button></center>
+    </form>
+
+    {% if error %}
+      <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <center>
+      <p class="note">
+        Already have an account? <a href="{{ url_for('login') }}">Login here</a>.
+      </p>
+    </center>
+  </div>
+
+</body>
+</html>

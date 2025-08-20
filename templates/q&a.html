@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ | LEGALOGIC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0 1rem 5rem 1rem;
+    }
+
+    .faq-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      text-align: center;
+      color: #1e40af;
+      margin-bottom: 2rem;
+    }
+
+    .faq-item {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 1rem;
+    }
+
+    .faq-question {
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #0f172a;
+    }
+
+    .faq-answer {
+      display: none;
+      padding-top: 0.5rem;
+      color: #475569;
+    }
+
+    .contact-box {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background-color: #f1f5f9;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .contact-box ul {
+      padding-left: 1.5rem;
+    }
+
+    /* Chatbot Floating Button */
+    #chatbot-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #1e40af;
+      color: white;
+      padding: 0.8rem 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      font-size: 1.5rem;
+    }
+
+    /* Chatbot Panel */
+    #chatbot-panel {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 400px;
+      height: 95vh;
+      background: white;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .chat-header {
+      background-color: #1e40af;
+      color: white;
+      display: flex;
+      padding: 0.6rem 0.8rem;
+      justify-content: space-between;
+      align-items: center;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .chat-footer {
+      display: flex;
+      padding: 1rem;
+      border-top: 1px solid #ddd;
+      background-color: #f8fafc;
+    }
+
+    .chat-footer input {
+      flex: 1;
+      padding: 0.8rem;
+      font-size: 1rem;
+      margin-right: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+
+    .chat-footer button {
+      background: #1e40af;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    /* Chat message styles */
+    .user-message {
+      text-align: right;
+      background: #dbeafe;
+      padding: 0.5rem;
+      margin: 0.3rem 0;
+      border-radius: 8px;
+    }
+    .bot-message {
+      text-align: left;
+      background: #f1f5f9;
+      padding: 0.5rem;
+      margin: 0.3rem 0;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  {% include 'navigation.html' %}
+
+  <!-- FAQ Section -->
+  <div class="faq-container">
+    <h2>Frequently Asked Questions (FAQ)</h2>
+    {% for item in faq_items %}
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer('faq{{ loop.index }}')">
+          {{ item.question }}
+        </div>
+        <div class="faq-answer" id="faq{{ loop.index }}">
+          {{ item.answer }}
+        </div>
+      </div>
+    {% else %}
+      <p>No FAQs available.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Contact Section -->
+  <div class="contact-box">
+    <h3>Need More Help?</h3>
+    <p>For further queries or technical assistance, contact our support team:</p>
+    <ul>
+      <li><strong>Email:</strong> support@legalogic.com</li>
+      <li><strong>Phone:</strong> +91 98765 43210</li>
+      <li><strong>Hours:</strong> Monday – Friday | 9:00 AM – 6:00 PM IST</li>
+    </ul>
+  </div>
+
+  <!-- Floating Chatbot Button -->
+  <div id="chatbot-button" onclick="toggleChatbot()">🤖</div>
+
+  Chatbot Panel
+  <div id="chatbot-panel">
+    <div class="chat-header">
+      <span>Ask LEGALOGIC Bot</span>
+      <button onclick="toggleChatbot()">✖</button>
+    </div>
+    <div class="chat-body" id="chat-log"></div>
+    <div class="chat-footer">
+      <input type="text" id="chat-input" placeholder="Ask your question..." onkeydown="if(event.key==='Enter') sendQuestion()">
+      <button onclick="sendQuestion()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleAnswer(id) {
+      const answer = document.getElementById(id);
+      answer.style.display = (answer.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function toggleChatbot() {
+      const panel = document.getElementById("chatbot-panel");
+      panel.style.display = (panel.style.display === "flex") ? "none" : "flex";
+      panel.style.flexDirection = "column";
+    }
+
+    function appendMessage(sender, message) {
+      const log = document.getElementById("chat-log");
+      const msgDiv = document.createElement("div");
+      msgDiv.className = sender === "You" ? "user-message" : "bot-message";
+      msgDiv.textContent = message;
+      log.appendChild(msgDiv);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function sendQuestion() {
+      const input = document.getElementById("chat-input");
+      const question = input.value.trim();
+      if (!question) return;
+
+      appendMessage("You", question);
+      input.value = "";
+
+      fetch('/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      })
+      .then(res => res.json())
+      .then(data => {
+        appendMessage("Bot", data.answer || "Sorry, I couldn't find an answer.");
+      })
+      .catch(() => {
+        appendMessage("Bot", "Error: Could not connect to server.");
+      });
+    }
+  </script>
+</body>
+</html>

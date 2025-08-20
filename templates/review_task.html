@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Review Task</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  {% include 'navigation.html' %}
+  <div class="container">
+    <h2>Review Task Details</h2>
+    {% if task %}
+    <form method="POST" action="/confirm-task">
+      <input type="hidden" name="task_id" value="{{ task.id }}">
+      
+      <label>Task Type:</label>
+      <input type="text" name="task_type" value="{{ task.task_type }}" required>
+
+      <label>Form:</label>
+      <input type="text" name="form" value="{{ task.form }}" required>
+
+      <label>Agency:</label>
+      <input type="text" name="agency" value="{{ task.agency }}" required>
+
+      <label>Due Date:</label>
+      <input type="date" name="due_date" value="{{ task.due_date.split('T')[0] if task.due_date else '' }}" required>
+
+      <label>Description:</label>
+      <textarea name="description" required>{{ task.description }}</textarea>
+
+      <button type="submit">Confirm Task</button>
+    </form>
+    {% else %}
+    <p>Task not found.</p>
+    {% endif %}
+  </div>
+</body>
+</html>
